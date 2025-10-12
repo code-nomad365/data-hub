@@ -173,18 +173,9 @@
         }
         
         .file-name {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
-            margin-bottom: 8px;
             word-break: break-word;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .file-path {
-            font-size: 13px;
-            opacity: 0.85;
-            font-family: 'Courier New', monospace;
             position: relative;
             z-index: 1;
         }
@@ -433,8 +424,8 @@
                     minute: '2-digit' 
                 });
                 
-                // 為每個檔案建立卡片並讀取標題
-                htmlFiles.forEach(async (file, index) => {
+                // 為每個檔案建立卡片
+                htmlFiles.forEach((file, index) => {
                     const li = document.createElement('li');
                     li.className = 'file-card';
                     li.style.animationDelay = `${index * 0.05}s`;
@@ -442,12 +433,10 @@
                     const fullUrl = BASE_URL + file.path;
                     const fileName = file.path.split('/').pop();
                     
-                    // 先顯示基本資訊
                     li.innerHTML = `
                         <div class="card-header">
                             ${icons.file}
-                            <div class="file-name">載入中...</div>
-                            <div class="file-path">${fileName}</div>
+                            <div class="file-name">${fileName}</div>
                         </div>
                         <div class="card-body">
                             <div class="button-group">
@@ -464,12 +453,6 @@
                     `;
                     
                     fileGridElement.appendChild(li);
-                    
-                    // 非同步讀取 HTML 標題
-                    fetchFileTitle(fullUrl).then(title => {
-                        const titleElement = li.querySelector('.file-name');
-                        titleElement.textContent = title || fileName.replace('.html', '');
-                    });
                 });
                 
             } catch (error) {
@@ -499,27 +482,6 @@
                 console.error('複製失敗:', err);
                 alert('複製失敗，請手動複製連結');
             });
-        }
-        
-        // 讀取 HTML 檔案的 title 標籤內容
-        async function fetchFileTitle(url) {
-            try {
-                // 使用 CORS 代理
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                const response = await fetch(proxyUrl);
-                
-                if (!response.ok) return null;
-                
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const title = doc.querySelector('title');
-                
-                return title ? title.textContent.trim() : null;
-            } catch (error) {
-                console.error('讀取標題失敗:', error);
-                return null;
-            }
         }
         
         loadFiles();
