@@ -26,7 +26,7 @@
             border-radius: 12px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             padding: 40px;
-            max-width: 700px;
+            max-width: 800px;
             width: 100%;
         }
         
@@ -40,6 +40,28 @@
             color: #666;
             margin-bottom: 30px;
             font-size: 14px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .file-list {
@@ -86,11 +108,31 @@
             border-radius: 6px;
             border: 1px solid #667eea;
             transition: all 0.3s ease;
+            margin-right: 10px;
         }
         
         .file-link:hover {
             background: #667eea;
             color: white;
+        }
+        
+        .file-count {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 6px;
+            color: #0066cc;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .error {
+            color: #dc3545;
+            padding: 20px;
+            text-align: center;
+            background: #f8d7da;
+            border-radius: 6px;
+            margin: 20px 0;
         }
         
         .footer {
@@ -114,53 +156,117 @@
 <body>
     <div class="container">
         <h1>📁 靜態檔案列表</h1>
-        <p class="subtitle">點擊連結開啟對應的 HTML 檔案</p>
+        <p class="subtitle">自動掃描 Repository 中的所有 HTML 檔案</p>
         
-        <ul class="file-list" id="fileList">
-            <!-- 檔案列表會由 JavaScript 動態生成 -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            正在載入檔案列表...
+        </div>
+        
+        <ul class="file-list" id="fileList" style="display: none;">
+            <!-- 檔案列表會自動生成 -->
         </ul>
         
+        <div class="file-count" id="fileCount" style="display: none;"></div>
+        
         <div class="footer">
-            Hosted on GitHub Pages
+            Hosted on GitHub Pages | Auto-updated
         </div>
     </div>
 
     <script>
         // 設定你的 GitHub 資訊
-        const GITHUB_USERNAME = 'code-nomad365';  // 請修改
-        const REPO_NAME = 'demo';     // 請修改
+        const GITHUB_USERNAME = 'code-nomad365';
+        const REPO_NAME = 'demo';
         
-        // 定義檔案列表（請根據實際檔案名稱修改）
-        const files = [
-            { name: '💰經濟最強國家：外帶美食文化課 🌍', filename: 'page01.html' },
-            { name: '🗺️經濟中等國家：多元美食文化課 🌶️', filename: 'page02.html' },
-            { name: '經濟最弱國家：主食與韌性文化課', filename: 'page03.html' }
-        ];
+        // GitHub API 端點
+        const API_URL = `https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/git/trees/main?recursive=1`;
+        const BASE_URL = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/`;
         
-        // 生成完整的 GitHub Pages URL
-        const baseUrl = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/`;
-        
-        // 動態生成檔案列表
-        const fileListElement = document.getElementById('fileList');
-        
-        files.forEach(file => {
-            const li = document.createElement('li');
-            li.className = 'file-item';
+        // 載入並顯示檔案列表
+        async function loadFiles() {
+            const loadingElement = document.getElementById('loading');
+            const fileListElement = document.getElementById('fileList');
+            const fileCountElement = document.getElementById('fileCount');
             
-            const fullUrl = baseUrl + file.filename;
-            
-            li.innerHTML = `
-                <div class="file-name">
-                    <span class="file-icon">📄</span>
-                    ${file.name}
-                </div>
-                <a href="${fullUrl}" class="file-link" target="_blank">
-                    ${fullUrl}
-                </a>
-            `;
-            
-            fileListElement.appendChild(li);
-        });
+            try {
+                // 從 GitHub API 獲取檔案樹
+                const response = await fetch(API_URL);
+                
+                if (!response.ok) {
+                    throw new Error('無法獲取檔案列表');
+                }
+                
+                const data = await response.json();
+                
+                // 過濾出所有 .html 檔案，排除 index.html
+                const htmlFiles = data.tree
+                    .filter(item => 
+                        item.type === 'blob' && 
+                        item.path.endsWith('.html') && 
+                        item.path !== 'index.html'
+                    )
+                    .sort((a, b) => a.path.localeCompare(b.path));
+                
+                if (htmlFiles.length === 0) {
+                    loadingElement.innerHTML = '<p class="error">未找到任何 HTML 檔案</p>';
+                    return;
+                }
+                
+                // 隱藏載入中提示
+                loadingElement.style.display = 'none';
+                fileListElement.style.display = 'block';
+                fileCountElement.style.display = 'block';
+                
+                // 生成檔案列表
+                htmlFiles.forEach(file => {
+                    const li = document.createElement('li');
+                    li.className = 'file-item';
+                    
+                    const fullUrl = BASE_URL + file.path;
+                    const fileName = file.path.split('/').pop().replace('.html', '');
+                    
+                    li.innerHTML = `
+                        <div class="file-name">
+                            <span class="file-icon">📄</span>
+                            ${fileName}
+                        </div>
+                        <a href="${fullUrl}" class="file-link" target="_blank">
+                            開啟檔案
+                        </a>
+                        <a href="${fullUrl}" class="file-link" onclick="copyToClipboard('${fullUrl}'); return false;">
+                            複製連結
+                        </a>
+                    `;
+                    
+                    fileListElement.appendChild(li);
+                });
+                
+                // 顯示檔案數量
+                fileCountElement.textContent = `共找到 ${htmlFiles.length} 個 HTML 檔案`;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                loadingElement.innerHTML = `
+                    <p class="error">
+                        載入失敗：${error.message}<br>
+                        請確認 Repository 設定正確且為 Public
+                    </p>
+                `;
+            }
+        }
+        
+        // 複製連結到剪貼簿
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('連結已複製到剪貼簿！');
+            }).catch(err => {
+                console.error('複製失敗:', err);
+            });
+        }
+        
+        // 頁面載入時執行
+        loadFiles();
     </script>
 </body>
 </html>
