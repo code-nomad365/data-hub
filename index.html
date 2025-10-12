@@ -501,6 +501,27 @@
             });
         }
         
+        // 讀取 HTML 檔案的 title 標籤內容
+        async function fetchFileTitle(url) {
+            try {
+                // 使用 CORS 代理
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                const response = await fetch(proxyUrl);
+                
+                if (!response.ok) return null;
+                
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const title = doc.querySelector('title');
+                
+                return title ? title.textContent.trim() : null;
+            } catch (error) {
+                console.error('讀取標題失敗:', error);
+                return null;
+            }
+        }
+        
         loadFiles();
     </script>
 </body>
