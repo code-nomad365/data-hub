@@ -433,20 +433,21 @@
                     minute: '2-digit' 
                 });
                 
-                htmlFiles.forEach((file, index) => {
+                // 為每個檔案建立卡片並讀取標題
+                htmlFiles.forEach(async (file, index) => {
                     const li = document.createElement('li');
                     li.className = 'file-card';
                     li.style.animationDelay = `${index * 0.05}s`;
                     
                     const fullUrl = BASE_URL + file.path;
-                    const fileName = file.path.split('/').pop().replace('.html', '');
-                    const fileId = `file-${index}`;
+                    const fileName = file.path.split('/').pop();
                     
+                    // 先顯示基本資訊
                     li.innerHTML = `
                         <div class="card-header">
                             ${icons.file}
-                            <div class="file-name">${fileName}</div>
-                            <div class="file-path">${file.path}</div>
+                            <div class="file-name">載入中...</div>
+                            <div class="file-path">${fileName}</div>
                         </div>
                         <div class="card-body">
                             <div class="button-group">
@@ -463,6 +464,12 @@
                     `;
                     
                     fileGridElement.appendChild(li);
+                    
+                    // 非同步讀取 HTML 標題
+                    fetchFileTitle(fullUrl).then(title => {
+                        const titleElement = li.querySelector('.file-name');
+                        titleElement.textContent = title || fileName.replace('.html', '');
+                    });
                 });
                 
             } catch (error) {
