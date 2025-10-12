@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 世界美食文化綜合評比：經濟連動分析 🌍</title>
+    <!-- 載入 Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 設定 Inter 字體和背景 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdfa; /* Light Teal Background */
+        }
+        /* 自定義樣式：星級評分 */
+        .rating-stars {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        /* 為每個經濟等級設定不同的顏色條，方便視覺區分 */
+        .strongest-row { border-left: 6px solid #14b8a6; } /* Teal 500 */
+        .middle-row { border-left: 6px solid #fbbf24; } /* Amber 400 */
+        .weakest-row { border-left: 6px solid #4ade80; } /* Green 400 */
+        
+        .category-header {
+            font-weight: 700;
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-teal': '#14b8a6', /* Teal 500 */
+                        'secondary-orange': '#f97316', /* Orange 500 */
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
+        <!-- 標題區塊 -->
+        <header class="bg-primary-teal p-6 md:p-10 text-white text-center rounded-t-2xl">
+            <h1 class="text-4xl md:text-5xl font-extrabold flex items-center justify-center">
+                <span class="mr-3">📈</span> 全球美食文化與經濟連動分析 📊
+            </h1>
+            <p class="mt-2 text-xl font-light">一課看懂經濟水平如何決定「外帶美食」的定義與特性。</p>
+        </header>
+
+        <!-- 課程內容區塊 -->
+        <main class="p-4 md:p-8 lg:p-12">
+            <section class="mb-10">
+                <h2 class="text-3xl font-bold text-primary-teal mb-4 border-b-2 pb-2 border-primary-teal">
+                    🔍 綜合分析視角：便利、營養與韌性 🔍
+                </h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    本評比將來自三個不同經濟層級的國家料理進行對比。你會發現，不論富裕或貧窮，「便利性」都是飲食文化中重要的考量因素，但它的**內涵**卻截然不同：
+                    <span class="font-bold text-primary-teal">富裕國家追求複雜且新鮮的營養效率；貧窮國家追求簡單、極致的保質期和低成本碳水化合物。</span>
+                </p>
+            </section>
+
+            <!-- 綜合評比表格 -->
+            <div class="overflow-x-auto shadow-lg rounded-xl border border-gray-200">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100 sticky top-0">
+                        <tr>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider rounded-tl-xl w-1/12">
+                                經濟等級
+                            </th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/12">
+                                國家 🌎
+                            </th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-2/12">
+                                推薦料理 🍴
+                            </th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-2/12">
+                                主要優勢
+                            </th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/12">
+                                外帶便利性 (1-5分)
+                            </th>
+                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-3/12 rounded-tr-xl">
+                                核心文化差異 💡
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        
+                        <!-- 經濟最強國家 (Strongest Economies) -->
+                        <tr><td colspan="6" class="category-header bg-teal-50 strongest-row text-primary-teal">💰 經濟最強國家 (高效率、多樣化)</td></tr>
+                        <tr class="strongest-row bg-white hover:bg-teal-50/50">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-primary-teal">最強</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇯🇵 日本</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">御飯糰 (Onigiri) 🍙</td>
+                            <td class="px-3 py-4 text-sm text-green-600 font-medium">輕便、均衡，便利店標準化生產</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars text-yellow-600">⭐⭐⭐⭐⭐</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">追求衛生、精緻、冷藏後仍美味的即食便利。</td>
+                        </tr>
+                        <tr class="strongest-row bg-gray-50 hover:bg-teal-50/50">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-primary-teal">最強</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇺🇸 美國</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">捲餅 (Burrito) 🌯</td>
+                            <td class="px-3 py-4 text-sm text-green-600 font-medium">營養豐富，客製化選項極高</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars text-yellow-600">⭐⭐⭐⭐⭐</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">反映多元文化融合、快速服務與份量飽足的消費主義。</td>
+                        </tr>
+                        
+                        <!-- 經濟中等國家 (Middle Economies) -->
+                        <tr><td colspan="6" class="category-header bg-amber-50 middle-row text-secondary-orange">🟡 經濟中等國家 (街頭美食、風味濃郁)</td></tr>
+                        <tr class="middle-row bg-white hover:bg-amber-50/50">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-secondary-orange">中等</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇲🇽 墨西哥</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">炸玉米餅 (Taco) 🌮</td>
+                            <td class="px-3 py-4 text-sm text-yellow-600 font-medium">快速組裝，手拿即可食</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars text-yellow-600">⭐⭐⭐⭐⭐</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">街頭飲食文化興盛，食物強調新鮮、即時性。</td>
+                        </tr>
+                        <tr class="middle-row bg-gray-50 hover:bg-amber-50/50">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-secondary-orange">中等</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇹🇭 泰國</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">泰式炒河粉 (Pad Thai) 🍜</td>
+                            <td class="px-3 py-4 text-sm text-yellow-600 font-medium">快速翻炒，常裝在簡單紙盒中</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars text-yellow-600">⭐⭐⭐⭐</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">城市化帶動對快速、可移動餐點的需求。</td>
+                        </tr>
+
+                        <!-- 經濟最弱國家 (Weakest Economies) -->
+                        <tr><td colspan="6" class="category-header bg-green-50 weakest-row text-green-600">💧 經濟最弱國家 (低成本、極簡生存)</td></tr>
+                        <tr class="weakest-row bg-white hover:bg-green-50/50">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-green-600">最弱</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇨🇩 剛果</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">Chikwangue (木薯條) 🥖</td>
+                            <td class="px-3 py-4 text-sm text-red-600 font-medium">發酵後極易保存，碳水高</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars text-green-600">⭐⭐⭐⭐⭐</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">便利性來自於<span class="font-bold">天然包裹和長保質期</span>，而非複雜物流。</td>
+                        </tr>
+                        <tr class="weakest-row bg-gray-50 hover:bg-green-50/50">
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-green-600">最弱</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇮🇳 印度 (地區)</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">印度烤餅 (Roti) 🫓</td>
+                            <td class="px-3 py-4 text-sm text-red-600 font-medium">極低成本，可疊放攜帶</td>
+                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars text-green-600">⭐⭐⭐⭐⭐</td>
+                            <td class="px-3 py-4 text-sm text-gray-700">食物即為基礎的**熱量來源**，目標是飽足，而非均衡。</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 課後討論與總結 -->
+            <section class="mt-12 bg-primary-teal/10 p-6 rounded-xl border-l-4 border-primary-teal shadow-md">
+                <h3 class="text-2xl font-bold text-primary-teal mb-3">
+                    🚀 核心總結：經濟與飲食文化的四個啟示 🚀
+                </h3>
+                <ol class="list-decimal list-inside space-y-3 text-gray-700 text-lg">
+                    <li><span class="font-bold">「便利」的定義：</span> 對富裕國家，「便利」意味著**節省時間**和**多樣選擇**；對最弱國家，「便利」意味著**延長保質期**和**極致的低成本**。</li>
+                    <li><span class="font-bold">營養與成本：</span> 富裕國家追求高蛋白、多樣化的營養均衡（如捲餅）；最弱國家則傾向單一但高效率的碳水化合物以求生存（如木薯）。</li>
+                    <li><span class="font-bold">包裝與物流：</span> 富裕國家依賴複雜的塑膠、紙盒包裝和冷鏈物流；最弱國家則依靠天然材料（如香蕉葉）或食材本身的特性（如發酵）。</li>
+                    <li><span class="font-bold">文化連結：</span> 不論在哪個經濟體，外帶美食都承載了社會脈動——無論是高速的現代生活，還是艱困的生存韌性。</li>
+                </ol>
+                <p class="mt-4 text-xl font-semibold text-secondary-orange">
+                    👉 請問：如果經濟最弱國家明天就能獲得頂尖的冷藏技術，他們會優先選擇改變飲食習慣，還是優先解決其他問題？為什麼？
+                </p>
+            </section>
+        </main>
+
+        <!-- 頁腳 -->
+        <footer class="bg-gray-200 p-4 text-center text-gray-600 text-sm rounded-b-2xl">
+            此為 Gemini Canvas 協助生成的教學教材，用於世界文化與地理課程。
+        </footer>
+    </div>
+</body>
+</html>
