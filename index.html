@@ -3,230 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌍 經濟中等國家：多元美食文化課 🌶️</title>
-    <!-- 載入 Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>靜態檔案列表</title>
     <style>
-        /* 設定 Inter 字體和背景 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7fafc; /* Light gray background */
-        }
-        /* 自定義樣式：星級評分 */
-        .rating-stars {
-            color: #f59e0b; /* Amber 500 */
-            font-size: 1.1rem;
-        }
-        /* 自定義顏色和圓角，確保表格圖片顯示美觀 */
-        .image-container {
+            font-family: "Segoe UI", Arial, "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 80px; /* 統一圖片欄位高度 */
+            padding: 20px;
         }
-        .image-container img {
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: contain;
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .file-list {
+            list-style: none;
+        }
+        
+        .file-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .file-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+        
+        .file-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .file-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .file-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            word-break: break-all;
+            padding: 8px 16px;
+            background: white;
             border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #667eea;
+            transition: all 0.3s ease;
         }
-    </style>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'primary-orange': '#f97316', /* Orange 500 for the header */
-                        'secondary-red': '#ef4444', /* Red 500 for the discussion */
-                    }
-                }
+        
+        .file-link:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 24px;
             }
         }
-    </script>
+    </style>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden">
-        <!-- 標題區塊 -->
-        <header class="bg-primary-orange p-6 md:p-10 text-white text-center rounded-t-2xl">
-            <h1 class="text-4xl md:text-5xl font-extrabold flex items-center justify-center">
-                <span class="mr-3">🗺️</span> 經濟中等國家：多元美食文化課 🌶️
-            </h1>
-            <p class="mt-2 text-xl font-light">探索新興經濟體的街頭美食：風味濃郁、文化底蘊深厚的便利餐點！</p>
-        </header>
-
-        <!-- 課程內容區塊 -->
-        <main class="p-4 md:p-8 lg:p-12">
-            <section class="mb-10">
-                <h2 class="text-3xl font-bold text-primary-orange mb-4 border-b-2 pb-2 border-primary-orange">
-                    🌱 學習目標：探索街頭美食的經濟角色 🌱
-                </h2>
-                <p class="text-lg text-gray-700 leading-relaxed">
-                    與高收入國家追求效率的單一便利餐點不同，經濟中等國家（新興經濟體）的街頭美食往往是**文化傳承**、**社交中心**和**微型經濟**的重要載體。它們不僅方便外帶，更充滿了地區特有的濃郁風味與人文故事。
-                </p>
-            </section>
-
-            <!-- 美食表格 -->
-            <div class="overflow-x-auto shadow-lg rounded-xl">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider rounded-tl-xl">
-                                國家
-                            </th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                推薦料理 🍴
-                            </th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                圖片參考 🖼️
-                            </th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                主要成分
-                            </th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                營養評價
-                            </th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                外帶便利性 (1-5分)
-                            </th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                文化意義
-                            </th>
-                            <th class="px-3 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider rounded-tr-xl">
-                                特殊說明 📣
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <!-- 墨西哥 -->
-                        <tr>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇲🇽 墨西哥</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700">塔可餅 (Taco) 🌮</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">
-                                <div class="image-container">
-                                    <img src="https://placehold.co/100x80/00bfa5/white?text=Taco" alt="">
-                                </div>
-                            </td>
-                            <td class="px-3 py-4 text-sm text-gray-700">玉米餅、肉類、洋蔥、香菜、檸檬</td>
-                            <td class="px-3 py-4 text-sm text-green-600 font-medium">✅ 蛋白質高，蔬菜可自行添加</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars">⭐⭐⭐⭐⭐</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">墨西哥國菜，從古代馬雅文明流傳至今的日常食物。</td>
-                            <td class="px-3 py-4 text-sm text-gray-500">街邊攤販隨處可見，醬料是風味關鍵。</td>
-                        </tr>
-                        <!-- 土耳其 -->
-                        <tr class="bg-gray-50">
-                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇹🇷 土耳其</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700">土耳其烤肉 (Döner Kebab) 🥙</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">
-                                <div class="image-container">
-                                    <img src="https://placehold.co/100x80/388e3c/white?text=Kebab" alt="">
-                                </div>
-                            </td>
-                            <td class="px-3 py-4 text-sm text-gray-700">烤肉、麵包/捲餅、生菜、優格醬</td>
-                            <td class="px-3 py-4 text-sm text-yellow-600 font-medium">📈 肉類豐富，飽足感強，但醬料熱量高</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars">⭐⭐⭐⭐</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">鄂圖曼帝國流傳至今，土耳其全球飲食輸出的代表。</td>
-                            <td class="px-3 py-4 text-sm text-gray-500">常在歐洲被視為廉價、快速的外賣選擇。</td>
-                        </tr>
-                        <!-- 泰國 -->
-                        <tr>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇹🇭 泰國</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700">泰式炒河粉 (Pad Thai) 🍜</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">
-                                <div class="image-container">
-                                    <img src="https://placehold.co/100x80/fbc02d/white?text=Pad+Thai" alt="[Image of Pad Thai]">
-                                </div>
-                            </td>
-                            <td class="px-3 py-4 text-sm text-gray-700">河粉、蝦仁/雞肉、豆芽、花生、特製醬汁</td>
-                            <td class="px-3 py-4 text-sm text-green-600 font-medium">✅ 碳水化合物與蛋白質的平衡組合</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars">⭐⭐⭐⭐</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">泰國的「非官方國菜」，體現了泰國美食的酸甜辣平衡。</td>
-                            <td class="px-3 py-4 text-sm text-gray-500">外帶多裝在紙盒或香蕉葉中，便於攜帶。</td>
-                        </tr>
-                        <!-- 巴西 -->
-                        <tr class="bg-gray-50">
-                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇧🇷 巴西</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700">巴西炸餃 (Pastel)</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">
-                                <div class="image-container">
-                                    <img src="https://placehold.co/100x80/2962ff/white?text=Pastel" alt="[Image of Pastel]">
-                                </div>
-                            </td>
-                            <td class="px-3 py-4 text-sm text-gray-700">薄麵皮、起司、肉末、棕櫚心等內餡</td>
-                            <td class="px-3 py-4 text-sm text-red-600 font-medium">⚠️ 油炸類，脂肪含量高，適合快速補充熱量</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars">⭐⭐⭐⭐⭐</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">巴西市集 (Feira) 的經典小吃，深受葡萄牙移民影響。</td>
-                            <td class="px-3 py-4 text-sm text-gray-500">通常搭配現榨的甘蔗汁 (Caldo de Cana) 食用。</td>
-                        </tr>
-                        <!-- 印尼 -->
-                        <tr>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇮🇩 印尼</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700">沙爹 (Satay)</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">
-                                <div class="image-container">
-                                    <img src="https://placehold.co/100x80/ff6f00/white?text=Satay" alt="">
-                                </div>
-                            </td>
-                            <td class="px-3 py-4 text-sm text-gray-700">烤肉串 (雞肉/羊肉/牛肉)、花生醬</td>
-                            <td class="px-3 py-4 text-sm text-green-600 font-medium">✅ 優質蛋白質，是東南亞代表性的烤肉方式</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars">⭐⭐⭐⭐</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">東南亞的國民美食，展現印尼豐富的香料文化。</td>
-                            <td class="px-3 py-4 text-sm text-gray-500">必須搭配濃郁的花生醬一起享用。</td>
-                        </tr>
-                        <!-- 南非 -->
-                        <tr class="bg-gray-50">
-                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇿🇦 南非</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700">免治麵包 (Bunny Chow) 🍞</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">
-                                <div class="image-container">
-                                    <img src="https://placehold.co/100x80/c62828/white?text=Bunny" alt="">
-                                </div>
-                            </td>
-                            <td class="px-3 py-4 text-sm text-gray-700">麵包、咖哩內餡 (牛肉/羊肉/豆類)</td>
-                            <td class="px-3 py-4 text-sm text-yellow-600 font-medium">📈 澱粉和蛋白質豐富，極具飽足感</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars">⭐⭐⭐</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">德爾班印度裔社群的發明，獨特的文化融合食物。</td>
-                            <td class="px-3 py-4 text-sm text-gray-500">麵包本身就是容器，用手掰著吃是傳統方式。</td>
-                        </tr>
-                        <!-- 阿根廷 -->
-                        <tr>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm font-medium text-gray-900">🇦🇷 阿根廷</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-700">餡餅 (Empanada)</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">
-                                <div class="image-container">
-                                    <img src="https://placehold.co/100x80/8e24aa/white?text=Empanada" alt="">
-                                </div>
-                            </td>
-                            <td class="px-3 py-4 text-sm text-gray-700">麵皮、牛肉、雞肉、洋蔥、橄欖等內餡</td>
-                            <td class="px-3 py-4 text-sm text-green-600 font-medium">✅ 便攜的主食，烤或炸皆可</td>
-                            <td class="px-3 py-4 whitespace-nowrap text-sm text-center rating-stars">⭐⭐⭐⭐⭐</td>
-                            <td class="px-3 py-4 text-sm text-gray-700">阿根廷的日常小吃，反映了西班牙的飲食影響與地域差異。</td>
-                            <td class="px-3 py-4 text-sm text-gray-500">每個地區都有不同的摺疊或封口方式。</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- 課後討論與總結 -->
-            <section class="mt-12 bg-red-50 p-6 rounded-xl border-l-4 border-secondary-red">
-                <h3 class="text-2xl font-bold text-secondary-red mb-3">
-                    🧐 總結與課後討論 🧐
-                </h3>
-                <ol class="list-decimal list-inside space-y-2 text-gray-700 text-lg">
-                    <li><span class="font-bold">高飽足感：</span> 與富裕國家傾向輕食不同，這些國家的外帶美食（如 Döner Kebab、Bunny Chow）往往具有極高的熱量和飽足感，這是因為它們需要為體力勞動者提供持久的能量。</li>
-                    <li><span class="font-bold">烹飪技術：</span> 大部分中等經濟體的美食都依賴街頭攤販的即時烹飪（現炒、現烤、現炸），而非工廠預製，這造就了更濃郁、更具層次的風味。</li>
-                    <li><span class="font-bold">文化地位：</span> 許多街頭小吃 (如 Taco, Pad Thai) 在這些國家被提升到「國民美食」的地位，是國家認同的一部分。</li>
-                </ol>
-                <p class="mt-4 text-xl font-semibold text-secondary-red">
-                    👉 討論：中等經濟體的美食通常比最強經濟體的美食更辛辣或油膩。你認為這與當地的**氣候**或**歷史貿易**有什麼關係？
-                </p>
-            </section>
-        </main>
-
-        <!-- 頁腳 -->
-        <footer class="bg-gray-200 p-4 text-center text-gray-600 text-sm rounded-b-2xl">
-            此為 Gemini Canvas 協助生成的教學教材，用於世界文化與地理課程。
-        </footer>
+<body>
+    <div class="container">
+        <h1>📁 靜態檔案列表</h1>
+        <p class="subtitle">點擊連結開啟對應的 HTML 檔案</p>
+        
+        <ul class="file-list" id="fileList">
+            <!-- 檔案列表會由 JavaScript 動態生成 -->
+        </ul>
+        
+        <div class="footer">
+            Hosted on GitHub Pages
+        </div>
     </div>
+
+    <script>
+        // 設定你的 GitHub 資訊
+        const GITHUB_USERNAME = 'code-nomad365';  // 請修改
+        const REPO_NAME = 'demo';     // 請修改
+        
+        // 定義檔案列表（請根據實際檔案名稱修改）
+        const files = [
+            { name: '💰經濟最強國家：外帶美食文化課 🌍', filename: 'page01.html' },
+            { name: '🗺️經濟中等國家：多元美食文化課 🌶️', filename: 'page02.html' },
+            { name: '經濟最弱國家：主食與韌性文化課', filename: 'page03.html' }
+        ];
+        
+        // 生成完整的 GitHub Pages URL
+        const baseUrl = `https://${GITHUB_USERNAME}.github.io/${REPO_NAME}/`;
+        
+        // 動態生成檔案列表
+        const fileListElement = document.getElementById('fileList');
+        
+        files.forEach(file => {
+            const li = document.createElement('li');
+            li.className = 'file-item';
+            
+            const fullUrl = baseUrl + file.filename;
+            
+            li.innerHTML = `
+                <div class="file-name">
+                    <span class="file-icon">📄</span>
+                    ${file.name}
+                </div>
+                <a href="${fullUrl}" class="file-link" target="_blank">
+                    ${fullUrl}
+                </a>
+            `;
+            
+            fileListElement.appendChild(li);
+        });
+    </script>
 </body>
 </html>
