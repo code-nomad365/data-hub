@@ -3,7 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>檔案資源中心 | V1.0.3</title>
+    <title>檔案資源中心 | V1.0.4</title>
+    
+    <!-- 引入 Firebase SDK (V1.0.4 新增) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, setDoc, collection, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // 全域變數，用於儲存 Firebase 實例和狀態
+        window.db = null;
+        window.auth = null;
+        window.appId = null;
+        window.userId = null;
+        window.fileClicks = {}; // Click counts from Firestore
+        window.isAuthReady = false; // Flag to ensure Firestore operations wait for auth
+        
+        /**
+         * 初始化 Firebase 應用程式、認證和 Firestore
+         */
+        window.initializeFirebase = async function() {
+            try {
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+                window.appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+                if (!firebaseConfig) {
+                    throw new Error("Firebase configuration is missing.");
+                }
+
+                const app = initializeApp(firebaseConfig);
+                window.db = getFirestore(app);
+                window.auth = getAuth(app);
+                
+                // 執行認證
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(window.auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(window.auth);
+                }
+                
+                window.userId = window.auth.currentUser?.uid || crypto.randomUUID();
+                window.isAuthReady = true;
+
+                // 開始監聽點擊數更新
+                window.listenForClickUpdates();
+                
+                // 載入 GitHub 檔案列表
+                window.loadFiles(); 
+
+            } catch (error) {
+                console.error('Firebase Initialization Error:', error);
+                document.getElementById('loading').innerHTML = `
+                    <p class="error">
+                        ❌ 應用程式初始化失敗：<br>
+                        <span style="font-size: 14px; color: #666; font-weight: normal;">${error.message}</span>
+                    </p>
+                `;
+            }
+        }
+        
+        /**
+         * 監聽 Firestore 中所有檔案的點擊計數
+         */
+        window.listenForClickUpdates = function() {
+            if (!window.db || !window.isAuthReady) return;
+
+            // 公共數據路徑: /artifacts/{appId}/public/data/file_clicks
+            const clicksCollectionRef = collection(window.db, `artifacts/${window.appId}/public/data/file_clicks`);
+
+            onSnapshot(clicksCollectionRef, (snapshot) => {
+                const newClicks = {};
+                snapshot.forEach((doc) => {
+                    // doc.id 為檔案路徑
+                    newClicks[doc.id] = doc.data().count || 0;
+                });
+                window.fileClicks = newClicks;
+                
+                // 重新渲染檔案列表以顯示最新的點擊數
+                window.handleSearch(); 
+            }, (error) => {
+                console.error("Error listening to click counts:", error);
+            });
+        }
+        
+        /**
+         * 處理檔案開啟點擊事件，並同步更新 Firestore 計數
+         */
+        window.handleFileOpen = async function(url, filePath) {
+            // 1. 在 Firestore 中增加計數
+            if (window.db && window.isAuthReady) {
+                try {
+                    const docRef = doc(window.db, `artifacts/${window.appId}/public/data/file_clicks`, filePath);
+                    // 使用 setDoc 和 increment 來原子性地更新計數
+                    await setDoc(docRef, { 
+                        count: increment(1),
+                        lastClicked: new Date()
+                    }, { merge: true });
+                } catch (e) {
+                    console.error("Error updating click count:", e);
+                }
+            }
+            
+            // 2. 開啟檔案連結
+            window.open(url, '_blank');
+        }
+
+        // 將 initializeFirebase 設定為頁面載入後的第一個執行函式
+        window.onload = window.initializeFirebase;
+
+    </script>
+    
     <!-- 引入 Tone.js 用於音效 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
     <style>
@@ -24,7 +133,6 @@
         
         body {
             font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", sans-serif;
-            /* 版面靠上對齊，整體留白 */
             background: linear-gradient(135deg, var(--color-1) 0%, var(--color-2) 100%);
             min-height: 100vh;
             padding: 40px 20px;
@@ -131,7 +239,7 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
         }
         
-        /* 檔案卡片標題顏色輪播 (保留視覺動態感) */
+        /* 檔案卡片標題顏色輪播 */
         .file-card:nth-child(5n+1) .card-header { background: linear-gradient(135deg, var(--color-1), #1a3340); }
         .file-card:nth-child(5n+2) .card-header { background: linear-gradient(135deg, var(--color-2), #1f7a6f); }
         .file-card:nth-child(5n+3) .card-header { background: linear-gradient(135deg, var(--color-3), #d4a849); }
@@ -145,18 +253,16 @@
             overflow: hidden;
             display: flex;
             align-items: center;
-            gap: 15px; /* 增加圖示和檔名間的間距 */
+            gap: 15px; 
         }
         
-        /* 檔案圖示容器，用於控制大小和顏色 */
         .file-icon {
-            width: 38px; /* 調整圖示大小，使其更精緻 */
+            width: 38px; 
             height: 38px;
             flex-shrink: 0;
-            color: white; /* 預設顏色，會被 JS 動態覆蓋以顯示檔案類型色 */
+            color: white; 
             position: relative;
             z-index: 1;
-            /* 添加一個淡出的白色圓形背景，讓圖示更突出 */
             padding: 5px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.1);
@@ -165,7 +271,7 @@
         .file-icon svg {
             width: 100%;
             height: 100%;
-            stroke: currentColor; /* 確保 SVG 使用 file-icon 的 color 屬性 */
+            stroke: currentColor; 
         }
         
         .file-name {
@@ -253,8 +359,25 @@
             gap: 10px;
             flex-wrap: wrap;
             padding: 20px 24px 24px;
+            align-items: center; /* 垂直置中 */
         }
         
+        /* 點擊計數器樣式 (V1.0.4 新增) */
+        .click-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #f8f8f8;
+            color: var(--color-1);
+            font-size: 14px;
+            font-weight: 600;
+            /* 讓計數器在按鈕群組中佔據最小空間 */
+            flex-shrink: 0;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
+        }
+
         .footer {
             text-align: center;
             color: white;
@@ -282,7 +405,17 @@
             }
             
             .button-group {
+                /* 確保按鈕在手機上仍能對齊，計數器獨立一行 */
                 flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn-primary, .btn-secondary, .click-counter {
+                width: 100%;
+            }
+
+            .click-counter {
+                order: -1; /* 讓計數器在手機上顯示在最上方 */
             }
         }
     </style>
@@ -297,10 +430,10 @@
         <!-- 載入中/錯誤訊息區塊 -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p style="font-size: 18px;">正在載入檔案列表...</p>
+            <p style="font-size: 18px;">正在連線到 Firebase...</p>
         </div>
         
-        <!-- 搜尋輸入框 (V1.0.3 新增) -->
+        <!-- 搜尋輸入框 -->
         <div class="search-container" id="searchContainer" style="display: none;">
             <input type="text" id="searchInput" placeholder="🔍 輸入檔名關鍵字進行搜尋..." oninput="handleSearch()">
         </div>
@@ -322,7 +455,7 @@
             <!-- 檔案卡片會自動生成 -->
         </ul>
         
-        <!-- 搜尋結果為空時的提示 (V1.0.3 新增) -->
+        <!-- 搜尋結果為空時的提示 -->
         <div class="no-results" id="noResults" style="display: none;">
             找不到符合條件的檔案，請嘗試其他關鍵字。
         </div>
@@ -333,27 +466,27 @@
             <p>🚀 Hosted on GitHub Pages | ⚡ Powered by GitHub API</p>
             <p style="margin-top: 8px; font-size: 12px; opacity: 0.7;">
                 © 2025 Auto-generated File Index
-                <span class="version-tag">V1.0.3</span>
+                <span class="version-tag">V1.0.4</span>
             </p>
         </div>
     </div>
 
     <script>
         // ==========================================================
-        // 核心設定 Core Configuration
+        // 核心設定 Core Configuration & State
+        // (V1.0.4: CONFIG 改為靜態常數，動態配置移至 Firebase 初始化邏輯)
         // ==========================================================
-        const CONFIG = {
+        const STATIC_CONFIG = {
             GITHUB_USERNAME: 'code-nomad365',
             REPO_NAME: 'demo',
-            VERSION: 'V1.0.3', // 版本編號已更新
-            // 支援的檔案類型，用於篩選和賦予圖示
+            VERSION: 'V1.0.4', // 版本編號已更新
             SUPPORTED_EXTENSIONS: ['.html', '.pdf', '.md', '.js', '.css', '.txt'],
         };
         
-        const API_URL = `https://api.github.com/repos/${CONFIG.GITHUB_USERNAME}/${CONFIG.REPO_NAME}/git/trees/main?recursive=1`;
-        const BASE_URL = `https://${CONFIG.GITHUB_USERNAME}.github.io/${CONFIG.REPO_NAME}/`;
+        const API_URL = `https://api.github.com/repos/${STATIC_CONFIG.GITHUB_USERNAME}/${STATIC_CONFIG.REPO_NAME}/git/trees/main?recursive=1`;
+        const BASE_URL = `https://${STATIC_CONFIG.GITHUB_USERNAME}.github.io/${STATIC_CONFIG.REPO_NAME}/`;
         
-        // 全域變數，用於儲存所有檔案資料 (V1.0.3 新增)
+        // 全域變數，用於儲存所有檔案資料 (用於搜尋和渲染)
         let allFiles = [];
 
         // Tone.js 聲音合成器
@@ -366,41 +499,37 @@
         const icons = {
             // 一般檔案 (Default) - 檔案文件圖標
             file: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>`,
-            
-            // HTML - 標籤文件 (結合標籤和文件框)
+            // HTML - 標籤文件
             html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <path d="M14 2v6h6"></path>
                 <path d="M9 15l-1-1 1-1m6 2l1-1-1-1"/>
                 <path d="M12 16.5v-3"/>
             </svg>`,
-            
             // PDF - 鎖定文件圖標
             pdf: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`,
-            
             // JavaScript (JS) - 代碼片段圖標
             js: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path><path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path></svg>`,
-            
             // Markdown (MD) - 文件與線條
             md: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M13 2v7h7"></path><path d="M8 12l2 2 4-4"></path></svg>`,
-            
             // CSS - 畫筆或樣式圖標
             css: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path><path d="M12 18V6"></path><path d="M15 9l-3-3-3 3"></path></svg>`,
-            
             // 外部連結/複製圖標 (不變)
             link: `<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4.715 6.542L3.343 7.914a3 3 0 104.243 4.243l1.828-1.829A3 3 0 008.586 5.5L8 6.086a1.002 1.002 0 00-.154.199 2 2 0 01.861 3.337L6.88 11.45a2 2 0 11-2.83-2.83l.793-.792a4.018 4.018 0 01-.128-1.287z"/><path d="M6.586 4.672A3 3 0 007.414 9.5l.775-.776a2 2 0 01-.896-3.346L9.12 3.55a2 2 0 112.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 10-4.243-4.243L6.586 4.672z"/></svg>`,
-            copy: `<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 2a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V2z"/><path d="M2 5a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2v-1h-1v1a1 1 0 01-1 1H2a1 1 0 01-1-1V7a1 1 0 011-1h1V5H2z"/></svg>`
+            copy: `<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4 2a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V2z"/><path d="M2 5a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2v-1h-1v1a1 1 0 01-1 1H2a1 1 0 01-1-1V7a1 1 0 011-1h1V5H2z"/></svg>`,
+            // 點擊計數器圖標 (V1.0.4 新增 - 眼睛圖標)
+            views: `<svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"/></svg>`,
         };
 
         // 檔案類型與顏色對應
         const fileColorMap = {
-            'html': '#E34F26', // HTML - 經典橘紅
-            'pdf': '#D90000',  // PDF - 鮮紅
-            'js': '#F7DF1E',   // JavaScript - 亮黃 (作為圖示色時看起來更像 JS)
-            'css': '#1572B6',  // CSS - 藍色
-            'md': '#087EA4',   // Markdown - 藍綠
-            'txt': '#607D8B',  // Text - 灰藍
-            'default': '#ffffff' // 預設使用白色 (與卡片底色呼應)
+            'html': '#E34F26', 
+            'pdf': '#D90000', 
+            'js': '#F7DF1E',   
+            'css': '#1572B6',  
+            'md': '#087EA4',   
+            'txt': '#607D8B',  
+            'default': '#ffffff' 
         };
         
         // ==========================================================
@@ -437,8 +566,28 @@
         function playSuccessSound() {
             initializeAudio(); 
             if (synth) {
-                synth.triggerAttackRelease("G5", "16n"); // 使用更高頻率的 G5 讓聲音更清脆
+                synth.triggerAttackRelease("G5", "16n"); 
             }
+        }
+        
+        // 顯示臨時訊息 (取代 alert)
+        function showTemporaryMessage(message, type = 'info') {
+            const tempMsg = document.createElement('div');
+            tempMsg.className = type === 'error' ? 'error' : 'no-results'; // 重用現有樣式
+            tempMsg.textContent = message;
+            tempMsg.style.position = 'fixed';
+            tempMsg.style.top = '20px';
+            tempMsg.style.left = '50%';
+            tempMsg.style.transform = 'translateX(-50%)';
+            tempMsg.style.zIndex = '1000';
+            tempMsg.style.padding = '15px 30px';
+            tempMsg.style.fontWeight = 'bold';
+            
+            document.body.appendChild(tempMsg);
+
+            setTimeout(() => {
+                tempMsg.remove();
+            }, 3000);
         }
 
         // ==========================================================
@@ -466,26 +615,42 @@
             fileGridElement.style.display = 'grid';
 
             filesToRender.forEach((file, index) => {
-                const li = document.createElement('li');
-                li.className = 'file-card';
-                li.style.animationDelay = `${index * 0.05}s`;
-                
                 const fullUrl = BASE_URL + file.path;
                 const fileName = file.path.split('/').pop();
                 
                 const { svg, accentColor } = getFileIcon(fileName);
+                
+                // 從全域狀態 fileClicks 取得點擊數 (V1.0.4 新增)
+                const clickCount = window.fileClicks[file.path] || 0;
 
+                // 為了避免 inline 事件處理器中的字串引號問題，對 filePath 進行跳脫
+                const safeFilePath = file.path.replace(/'/g, "\\'");
+
+
+                const li = document.createElement('li');
+                li.className = 'file-card';
+                // 移除 animationDelay 以提高渲染效率
+                
                 li.innerHTML = `
                     <div class="card-header">
-                        <!-- 圖示使用動態顏色 -->
                         <div class="file-icon" style="color: ${accentColor};">${svg}</div>
                         <div class="file-name" title="${file.path}">${fileName}</div>
                     </div>
                     <div class="button-group">
-                        <a href="${fullUrl}" class="btn btn-primary" target="_blank">
+                        
+                        <!-- 開啟檔案按鈕 (點擊時會同步更新 Firestore 計數) -->
+                        <button class="btn btn-primary" onclick="handleFileOpen('${fullUrl}', '${safeFilePath}')">
                             ${icons.link}
                             開啟檔案
-                        </a>
+                        </button>
+
+                        <!-- 點擊計數器 (V1.0.4 新增) -->
+                        <div class="click-counter">
+                            ${icons.views}
+                            <span>${clickCount} 次點擊</span>
+                        </div>
+
+                        <!-- 複製連結按鈕 -->
                         <button class="btn btn-secondary" onclick="handleCopyClick('${fullUrl}', this)">
                             ${icons.copy}
                             複製連結
@@ -500,7 +665,7 @@
         /**
          * 處理即時搜尋輸入
          */
-        function handleSearch() {
+        window.handleSearch = function() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const filtered = allFiles.filter(file => {
                 // 比對檔案路徑 (包含目錄) 或最終檔名
@@ -516,17 +681,21 @@
         /**
          * 載入所有檔案並初始化應用程式
          */
-        async function loadFiles() {
+        window.loadFiles = async function() {
             const loadingElement = document.getElementById('loading');
             const statsBarElement = document.getElementById('statsBar');
             const searchContainerElement = document.getElementById('searchContainer');
             const updateTimeElement = document.getElementById('updateTime');
 
+            // 1. 確保顯示載入狀態
+            loadingElement.style.display = 'block';
+            loadingElement.innerHTML = `<div class="spinner"></div><p style="font-size: 18px;">正在載入檔案列表...</p>`;
+
             // 更新版本標籤
-            document.querySelector('.version-tag').textContent = CONFIG.VERSION;
+            document.querySelector('.version-tag').textContent = STATIC_CONFIG.VERSION;
             
             try {
-                // 1. 獲取 GitHub 檔案列表
+                // 2. 獲取 GitHub 檔案列表
                 const response = await fetch(API_URL);
                 
                 if (!response.ok) {
@@ -535,8 +704,8 @@
                 
                 const data = await response.json();
                 
-                // 2. 過濾支援的檔案類型 (排除 index.html) 並儲存到全域變數
-                const supportedExtensions = CONFIG.SUPPORTED_EXTENSIONS.map(e => e.toLowerCase());
+                // 3. 過濾支援的檔案類型 (排除 index.html) 並儲存到全域變數
+                const supportedExtensions = STATIC_CONFIG.SUPPORTED_EXTENSIONS.map(e => e.toLowerCase());
 
                 allFiles = data.tree
                     .filter(item => {
@@ -550,25 +719,25 @@
                     loadingElement.innerHTML = `
                         <div class="error">
                             ❌ 未找到任何支援的檔案<br>
-                            <span style="font-size: 14px; color: #666;">（目前支援：${CONFIG.SUPPORTED_EXTENSIONS.join(', ')}，且已排除 index.html）</span>
+                            <span style="font-size: 14px; color: #666;">（目前支援：${STATIC_CONFIG.SUPPORTED_EXTENSIONS.join(', ')}，且已排除 index.html）</span>
                         </div>
                     `;
                     return;
                 }
                 
-                // 3. 隱藏載入畫面並顯示內容
+                // 4. 隱藏載入畫面並顯示內容
                 loadingElement.style.display = 'none';
                 statsBarElement.style.display = 'flex';
                 searchContainerElement.style.display = 'block';
 
-                // 4. 更新統計資訊 (顯示全部數量)
+                // 5. 更新統計資訊 (顯示全部數量)
                 fileCountElement.textContent = allFiles.length;
                 updateTimeElement.textContent = new Date().toLocaleTimeString('zh-TW', { 
                     hour: '2-digit', 
                     minute: '2-digit' 
                 });
                 
-                // 5. 初始渲染所有檔案
+                // 6. 初始渲染所有檔案 (會自動包含 Firestore 點擊數)
                 renderFiles(allFiles);
                 
             } catch (error) {
@@ -577,7 +746,7 @@
                 loadingElement.innerHTML = `
                     <p class="error">
                         ❌ 載入失敗：${error.message}<br><br>
-                        請確認 Repository (<strong>${CONFIG.REPO_NAME}</strong>) 設定正確且為 Public
+                        請確認 Repository (<strong>${STATIC_CONFIG.REPO_NAME}</strong>) 設定正確且為 Public
                     </p>
                 `;
                 statsBarElement.style.display = 'none';
@@ -585,11 +754,10 @@
             }
         }
 
-        // 處理複製點擊事件，包含音效播放
+        // 處理複製點擊事件
         function handleCopyClick(text, button) {
             playSuccessSound();
 
-            // 使用 document.execCommand('copy') 作為 fallback
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(updateButtonStatus).catch(() => fallbackCopy(text, button));
             } else {
@@ -622,23 +790,12 @@
                     document.execCommand('copy');
                     updateButtonStatus();
                 } catch (err) {
-                    console.error('Fallback 複製失敗:', err);
-                    // 這裡使用自定義的訊息框取代 alert()
-                    const errorMessage = document.createElement('div');
-                    errorMessage.className = 'error';
-                    errorMessage.textContent = '複製失敗，請手動複製連結。';
-                    document.querySelector('.container').appendChild(errorMessage);
-
-                    setTimeout(() => {
-                        errorMessage.remove();
-                    }, 3000);
+                    showTemporaryMessage('複製失敗，請手動複製連結。', 'error');
                 }
                 document.body.removeChild(textarea);
             }
         }
         
-        // 頁面載入後執行
-        window.onload = loadFiles;
     </script>
 </body>
 </html>
