@@ -344,14 +344,14 @@
         // ==========================================================
         const CONFIG = {
             GITHUB_USERNAME: 'code-nomad365',
-            REPO_NAME: 'demo',
+            REPO_NAME: 'data-hub',
             VERSION: 'V1.0.3', // 版本編號已更新
             // 支援的檔案類型，用於篩選和賦予圖示
             SUPPORTED_EXTENSIONS: ['.html', '.pdf', '.md', '.js', '.css', '.txt'],
         };
         
         const API_URL = `https://api.github.com/repos/${CONFIG.GITHUB_USERNAME}/${CONFIG.REPO_NAME}/git/trees/main?recursive=1`;
-        const BASE_URL = `https://${CONFIG.GITHUB_USERNAME}.github.io/${CONFIG.REPO_NAME}/`;
+        const BASE_URL = `./`; // 使用相對路徑，適用於任何部署平台
         
         // 全域變數，用於儲存所有檔案資料 (V1.0.3 新增)
         let allFiles = [];
