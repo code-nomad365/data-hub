@@ -1,0 +1,211 @@
+import React, { useState } from 'react';
+import { 
+  Calendar, 
+  FileText, 
+  Scale, 
+  UserX, 
+  ExternalLink, 
+  ArrowRight,
+  ShieldAlert,
+  Gavel,
+  Newspaper
+} from 'lucide-react';
+
+const timelineData = [
+  {
+    date: '2025-11-19',
+    title: '簽署《Epstein 檔案透明法案》',
+    description: '川普簽署《Epstein Files Transparency Act》，法律強制要求司法部必須在 30 天內公開所有相關檔案。',
+    icon: <Gavel className="w-6 h-6" />,
+    category: '法規',
+    tags: ['川普', '透明化']
+  },
+  {
+    date: '2025-12-19',
+    title: '首批檔案釋出：遮蔽引發不滿',
+    description: '司法部依據法律釋出首批大量 Epstein 檔案，但內容遭到嚴重遮蔽（Redacted），引發受害者生還者及國會議員強烈抨擊。',
+    icon: <ShieldAlert className="w-6 h-6" />,
+    category: '檔案',
+    tags: ['司法部', '遮蔽爭議']
+  },
+  {
+    date: '2026-01-30',
+    title: '300 萬頁文件大解密',
+    description: '再次釋出約 300 萬頁文件、影片與照片。這批資料成為後續政治與法律風暴的核心火種，揭露了更多權勢人物的關聯。',
+    icon: <FileText className="w-6 h-6" />,
+    category: '檔案',
+    tags: ['關鍵證據', '多媒體']
+  },
+  {
+    date: '2026-02-06',
+    title: '媒體重整調查時間軸',
+    description: '各大媒體整理並發布 Epstein 調查與檔案公開的完整脈絡，凸顯過去多年來系統性的追查障礙與掩蓋問題。',
+    icon: <Newspaper className="w-6 h-6" />,
+    category: '媒體',
+    tags: ['深度報導']
+  },
+  {
+    date: '2026-02-10',
+    title: '「Virginia’s Law」正式提案',
+    description: '參議院多數黨領袖 Schumer 在國會正式提出「Virginia’s Law」，旨在取消多項涉及性侵與性販運聯邦案件的追訴時效。',
+    icon: <Scale className="w-6 h-6" />,
+    category: '法規',
+    tags: ['Schumer', '法律改革']
+  },
+  {
+    date: '2026-02-10',
+    title: '檔案視覺導覽與點名',
+    description: '多家媒體推出「Epstein Files」視覺化互動地圖與導覽，協助大眾理解龐雜的文件內容，並列出被點名的政商權勢人物。',
+    icon: <ExternalLink className="w-6 h-6" />,
+    category: '媒體',
+    tags: ['互動式新聞', '權勢人物']
+  },
+  {
+    date: '2026-02-11',
+    title: '高盛法務長 Kathy Ruemmler 辭職',
+    description: '媒體報導高盛（Goldman Sachs）首席法律官 Kathy Ruemmler 將辭職，生效日期訂於 6 月 30 日，引發市場與政治圈高度關注。',
+    icon: <UserX className="w-6 h-6" />,
+    category: '辭職',
+    tags: ['高盛', '人事地震']
+  },
+  {
+    date: '2026-02-12',
+    title: '確認辭職與 Epstein 檔案之關聯',
+    description: '多家國際媒體確認：Ruemmler 是因為司法部公布的 Epstein 相關文件中涉及其內容，才決定辭去高盛總法律顧問職務。',
+    icon: <ShieldAlert className="w-6 h-6" />,
+    category: '辭職',
+    tags: ['司法部文件', '因果確認']
+  },
+  {
+    date: '2026-02-13',
+    title: 'Al Jazeera：明確連結 Epstein 關係',
+    description: '半島電視台（Al Jazeera）發布專題報導，標題明確指出「高盛高層 Kathy Ruemmler 因 Epstein 關係辭職」，將兩者連結完全公開化。',
+    icon: <Newspaper className="w-6 h-6" />,
+    category: '媒體',
+    tags: ['半島電視台', '醜聞揭露']
+  }
+];
+
+const CategoryBadge = ({ category }) => {
+  const colors = {
+    '法規': 'bg-blue-100 text-blue-800',
+    '檔案': 'bg-red-100 text-red-800',
+    '媒體': 'bg-emerald-100 text-emerald-800',
+    '辭職': 'bg-purple-100 text-purple-800'
+  };
+  return (
+    <span className={`px-2 py-1 rounded-full text-xs font-medium ${colors[category] || 'bg-gray-100'}`}>
+      {category}
+    </span>
+  );
+};
+
+export default function App() {
+  const [filter, setFilter] = useState('全部');
+  const categories = ['全部', ...new Set(timelineData.map(item => item.category))];
+
+  const filteredData = filter === '全部' 
+    ? timelineData 
+    : timelineData.filter(item => item.category === filter);
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-20">
+      {/* Hero Section */}
+      <header className="bg-slate-900 text-white py-16 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+            Epstein 檔案與 Ruemmler 風暴
+          </h1>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+            追蹤從法案簽署到權勢人物垮台的完整時間軌跡
+          </p>
+        </div>
+      </header>
+
+      {/* Filter Controls */}
+      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 mb-12 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 flex flex-wrap gap-2 justify-center">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setFilter(cat)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filter === cat 
+                ? 'bg-slate-900 text-white shadow-md' 
+                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Timeline Layout */}
+      <div className="max-w-4xl mx-auto px-4 relative">
+        {/* Vertical Line */}
+        <div className="absolute left-8 md:left-1/2 transform -translate-x-1/2 h-full w-0.5 bg-slate-200 hidden md:block"></div>
+
+        <div className="space-y-12">
+          {filteredData.map((item, index) => (
+            <div key={index} className={`relative flex flex-col md:flex-row items-center ${index % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
+              
+              {/* Desktop Center Point */}
+              <div className="absolute left-8 md:left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-4 border-white bg-slate-900 z-10 shadow-sm"></div>
+
+              {/* Date Label (Desktop) */}
+              <div className={`hidden md:block w-1/2 px-12 text-right ${index % 2 === 0 ? 'text-left' : 'text-right'}`}>
+                <div className="flex items-center gap-2 text-slate-500 font-mono font-bold justify-end" style={{ flexDirection: index % 2 === 0 ? 'row' : 'row-reverse' }}>
+                  <Calendar className="w-4 h-4" />
+                  <span>{item.date}</span>
+                </div>
+              </div>
+
+              {/* Content Card */}
+              <div className="w-full md:w-1/2 pl-16 md:pl-0 md:px-12">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
+                  {/* Mobile Date */}
+                  <div className="flex items-center gap-2 text-slate-500 font-mono font-bold mb-2 md:hidden">
+                    <Calendar className="w-4 h-4" />
+                    <span>{item.date}</span>
+                  </div>
+
+                  <div className="flex justify-between items-start mb-3">
+                    <div className={`p-2 rounded-xl bg-slate-50 text-slate-700 group-hover:scale-110 transition-transform`}>
+                      {item.icon}
+                    </div>
+                    <CategoryBadge category={item.category} />
+                  </div>
+
+                  <h3 className="text-xl font-bold mb-2 text-slate-800 leading-snug">
+                    {item.title}
+                  </h3>
+                  
+                  <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                    {item.description}
+                  </p>
+
+                  <div className="flex flex-wrap gap-2">
+                    {item.tags.map(tag => (
+                      <span key={tag} className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+                        # {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer Info */}
+      <footer className="mt-24 text-center text-slate-400 text-xs px-4">
+        <div className="max-w-xl mx-auto border-t border-slate-200 pt-8">
+          <p>資料來源根據 2025-2026 年公開媒體報導整理</p>
+          <p className="mt-1">由 AI 生成之互動式時間軸介面</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
