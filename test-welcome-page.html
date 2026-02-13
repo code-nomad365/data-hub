@@ -18,8 +18,10 @@
             justify-content: center;
             align-items: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             position: relative;
+            padding: 40px 20px;
         }
 
         /* 背景動畫泡泡 */
@@ -76,6 +78,7 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             text-align: center;
             animation: fadeInUp 0.8s ease-out;
+            margin: auto;
         }
 
         @keyframes fadeInUp {
